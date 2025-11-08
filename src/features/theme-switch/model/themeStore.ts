@@ -1,0 +1,1 @@
+// optional (agar ThemeProvider’dan tashqari logic bo‘lsa)

@@ -1,0 +1,60 @@
+{
+  "Home": {
+    "title": "Welcome!",
+    "description": "This is an English page built on Next.js 15 and next-intl."
+  },
+  "Navigation": {
+    "general": "General",
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "users": "Users",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "Language": {
+    "uzbek": "Uzbek",
+    "english": "English",
+    "russian": "Russian"
+  },
+  "Theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Toggle theme"
+  },
+  "Config": {
+    "title": "Settings",
+    "description": "Adjust the appearance and layout to suit your preferences.",
+    "language": "Language",
+    "theme": "Theme",
+    "sidebar": "Sidebar",
+    "layout": "Layout",
+    "direction": "Direction",
+    "reset": "Reset"
+  },
+  "auth": {
+    "please_login": "Please log in",
+    "login_with_telegram": "Login with Telegram",
+    "login_to_osonify": "Login to Osonify",
+    "use_telegram_to_login": "Use Telegram to log in",
+    "authenticating": "Authenticating...",
+    "login": "Login",
+    "cancel": "Cancel",
+    "debug_login": "Debug Login",
+    "debug": {
+      "title": "Debug Login",
+      "subtitle": "Development mode authentication",
+      "active": "Debug mode is active",
+      "description": "This is a development-only feature. Never enable in production.",
+      "token_label": "Authentication Token",
+      "token_placeholder": "Enter your token",
+      "skip_validation": "Skip validation",
+      "enter_token": "Please enter a token",
+      "auth_failed_check_token": "Authentication failed. Please check your token.",
+      "try_skip_validation": "Try enabling 'Skip validation' if the token is invalid",
+      "authenticating": "Authenticating...",
+      "footer": "For development use only"
+    }
+  }
+}

@@ -1,0 +1,2 @@
+export { useThemeSwitcher } from "./useThemeSwitcher";
+

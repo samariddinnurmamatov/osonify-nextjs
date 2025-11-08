@@ -1,0 +1,60 @@
+{
+  "Home": {
+    "title": "Xush kelibsiz!",
+    "description": "Bu Next.js 15 va next-intl asosida yaratilgan o'zbekcha sahifa."
+  },
+  "Navigation": {
+    "general": "Umumiy",
+    "dashboard": "Boshqaruv paneli",
+    "tasks": "Vazifalar",
+    "users": "Foydalanuvchilar",
+    "settings": "Sozlamalar",
+    "profile": "Profil",
+    "logout": "Chiqish"
+  },
+  "Language": {
+    "uzbek": "O'zbek",
+    "english": "Ingliz",
+    "russian": "Rus"
+  },
+  "Theme": {
+    "light": "Yorug'",
+    "dark": "Qorong'u",
+    "system": "Tizim",
+    "toggle": "Mavzuni almashtirish"
+  },
+  "Config": {
+    "title": "Sozlamalar",
+    "description": "Ko'rinish va joylashuvni o'z xohishingizga mos ravishda sozlang.",
+    "language": "Til",
+    "theme": "Mavzu",
+    "sidebar": "Yon panel",
+    "layout": "Joylashuv",
+    "direction": "Yo'nalish",
+    "reset": "Qayta tiklash"
+  },
+  "auth": {
+    "please_login": "Iltimos, tizimga kiring",
+    "login_with_telegram": "Telegram orqali kirish",
+    "login_to_osonify": "Osonify'ga kirish",
+    "use_telegram_to_login": "Kirish uchun Telegram'dan foydalaning",
+    "authenticating": "Autentifikatsiya qilinmoqda...",
+    "login": "Kirish",
+    "cancel": "Bekor qilish",
+    "debug_login": "Debug Login",
+    "debug": {
+      "title": "Debug Login",
+      "subtitle": "Development rejimida autentifikatsiya",
+      "active": "Debug rejimi faol",
+      "description": "Bu faqat development uchun. Production'da hech qachon yoqmang.",
+      "token_label": "Autentifikatsiya Token",
+      "token_placeholder": "Token'ni kiriting",
+      "skip_validation": "Validatsiyani o'tkazib yuborish",
+      "enter_token": "Iltimos, token kiriting",
+      "auth_failed_check_token": "Autentifikatsiya muvaffaqiyatsiz. Token'ni tekshiring.",
+      "try_skip_validation": "Agar token noto'g'ri bo'lsa, 'Skip validation'ni yoqing",
+      "authenticating": "Autentifikatsiya qilinmoqda...",
+      "footer": "Faqat development uchun"
+    }
+  }
+}

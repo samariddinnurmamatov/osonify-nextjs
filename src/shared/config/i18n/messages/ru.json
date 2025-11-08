@@ -1,0 +1,60 @@
+{
+  "Home": {
+    "title": "Добро пожаловать!",
+    "description": "Это русская страница, созданная на основе Next.js 15 и next-intl."
+  },
+  "Navigation": {
+    "general": "Общее",
+    "dashboard": "Панель управления",
+    "tasks": "Задачи",
+    "users": "Пользователи",
+    "settings": "Настройки",
+    "profile": "Профиль",
+    "logout": "Выйти"
+  },
+  "Language": {
+    "uzbek": "Узбекский",
+    "english": "Английский",
+    "russian": "Русский"
+  },
+  "Theme": {
+    "light": "Светлая",
+    "dark": "Тёмная",
+    "system": "Системная",
+    "toggle": "Переключить тему"
+  },
+  "Config": {
+    "title": "Настройки",
+    "description": "Настройте внешний вид и макет в соответствии с вашими предпочтениями.",
+    "language": "Язык",
+    "theme": "Тема",
+    "sidebar": "Боковая панель",
+    "layout": "Макет",
+    "direction": "Направление",
+    "reset": "Сброс"
+  },
+  "auth": {
+    "please_login": "Пожалуйста, войдите",
+    "login_with_telegram": "Войти через Telegram",
+    "login_to_osonify": "Войти в Osonify",
+    "use_telegram_to_login": "Используйте Telegram для входа",
+    "authenticating": "Аутентификация...",
+    "login": "Войти",
+    "cancel": "Отмена",
+    "debug_login": "Debug Login",
+    "debug": {
+      "title": "Debug Login",
+      "subtitle": "Аутентификация в режиме разработки",
+      "active": "Режим отладки активен",
+      "description": "Это функция только для разработки. Никогда не включайте в production.",
+      "token_label": "Токен аутентификации",
+      "token_placeholder": "Введите ваш токен",
+      "skip_validation": "Пропустить проверку",
+      "enter_token": "Пожалуйста, введите токен",
+      "auth_failed_check_token": "Аутентификация не удалась. Проверьте ваш токен.",
+      "try_skip_validation": "Попробуйте включить 'Пропустить проверку', если токен недействителен",
+      "authenticating": "Аутентификация...",
+      "footer": "Только для разработки"
+    }
+  }
+}
