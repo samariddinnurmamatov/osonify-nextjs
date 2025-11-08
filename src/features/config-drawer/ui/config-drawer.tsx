@@ -23,7 +23,7 @@ import {
   useLayout,
 } from "@/app/providers/layout";
 import { useTheme } from "@/app/providers/theme/ThemeProvider";
-import { routing } from "@/shared/config/i18n";
+import { routing, type AppLocale } from "@/shared/config/i18n";
 import {
   Sheet,
   SheetContent,
@@ -352,7 +352,7 @@ function LanguageConfig({
         onValueChange={(locale) => {
           setShouldStayOpen(true);
           setIsOpen(true);
-          void changeLocale(locale as any);
+          void changeLocale(locale as AppLocale);
           window.setTimeout(() => setShouldStayOpen(false), 300);
         }}
         className="grid w-full max-w-md grid-cols-3 gap-4"

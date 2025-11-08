@@ -7,6 +7,6 @@ export interface SlideData {
   chat_id: string;
   content?: string;
   html?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 

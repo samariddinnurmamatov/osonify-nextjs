@@ -11,9 +11,9 @@ export interface ImageConfig {
     display_name: string;
     styles?: string[];
     aspect_ratios?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   }>;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ImageData {
@@ -22,12 +22,12 @@ export interface ImageData {
   chat_id?: string;
   is_liked?: boolean;
   created_at?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface ImagesListParams extends PaginationParams {}
+export type ImagesListParams = PaginationParams;
 
-export interface ImagesListResponse extends PaginatedResponse<ImageData> {}
+export type ImagesListResponse = PaginatedResponse<ImageData>;
 
 export interface LikeImageResponse {
   success: boolean;

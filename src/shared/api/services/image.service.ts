@@ -28,7 +28,7 @@ export class ImageService {
    */
   async getMyImages(params: ImagesListParams = {}): Promise<ImagesListResponse> {
     return withErrorHandling(() => {
-      const query = buildQuery(params);
+      const query = buildQuery(params as Record<string, unknown>);
       return api.get<ImagesListResponse>(`${IMAGES_BASE}/my${query}`);
     });
   }
@@ -38,7 +38,7 @@ export class ImageService {
    */
   async getAllImages(params: ImagesListParams = {}): Promise<ImagesListResponse> {
     return withErrorHandling(() => {
-      const query = buildQuery(params);
+      const query = buildQuery(params as Record<string, unknown>);
       return api.get<ImagesListResponse>(`${IMAGES_BASE}/all${query}`);
     });
   }
@@ -48,7 +48,7 @@ export class ImageService {
    */
   async getLikedImages(params: ImagesListParams = {}): Promise<ImagesListResponse> {
     return withErrorHandling(() => {
-      const query = buildQuery(params);
+      const query = buildQuery(params as Record<string, unknown>);
       return api.get<ImagesListResponse>(`${IMAGES_BASE}/liked${query}`);
     });
   }

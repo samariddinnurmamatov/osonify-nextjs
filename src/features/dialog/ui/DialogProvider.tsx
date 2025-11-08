@@ -17,8 +17,9 @@ export function DialogProvider<T extends DialogKey = DialogKey>({
 }: DialogProviderProps<T>) {
   const state = useDialogState<T>(initial);
 
-  const value = useMemo<DialogContextValue>(
-    () => ({ ...state }),
+  const value = useMemo(
+    () => ({ ...state }) as DialogContextValue,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [state.current, state.isOpen, state.open, state.close, state.toggle]
   );
 

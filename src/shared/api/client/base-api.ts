@@ -168,7 +168,9 @@ export async function baseFetch<TResponse, TBody = unknown>(
         status: response.status,
         message: typeof errorData === "string" 
           ? errorData 
-          : (errorData as any)?.message || response.statusText,
+          : (typeof errorData === "object" && errorData !== null && "message" in errorData
+              ? String((errorData as { message?: unknown }).message)
+              : null) || response.statusText,
         data: errorData,
         path: fullPath,
         method,

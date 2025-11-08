@@ -28,7 +28,7 @@ export interface User {
     user_id: string;
     plan: string;
     plan_type: string;
-    expenses?: any[];
+    expenses?: unknown[];
     created_at: string;
     expire_date?: string;
     id: string;

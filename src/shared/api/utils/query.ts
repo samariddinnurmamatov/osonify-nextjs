@@ -4,9 +4,9 @@
  * Filters null/undefined values and builds query string
  * Supports arrays, booleans, and other types
  */
-export function buildQuery(params: Record<string, any>): string {
+export function buildQuery(params: Record<string, unknown>): string {
   const entries = Object.entries(params).filter(
-    ([_, value]) => value != null && value !== ""
+    ([, value]) => value != null && value !== ""
   );
   
   if (entries.length === 0) {

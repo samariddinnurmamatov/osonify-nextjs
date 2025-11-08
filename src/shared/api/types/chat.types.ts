@@ -12,7 +12,7 @@ export interface ChatMetadata {
   model?: string;
   style?: string;
   aspect_ratio?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface CreateChatRequest {
@@ -41,10 +41,10 @@ export interface ChatData {
   is_public?: boolean;
   created_at: string;
   updated_at?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface ChatsListParams extends PaginationParams {}
+export type ChatsListParams = PaginationParams;
 
-export interface ChatsListResponse extends PaginatedResponse<ChatData> {}
+export type ChatsListResponse = PaginatedResponse<ChatData>;
 

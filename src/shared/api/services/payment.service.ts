@@ -30,9 +30,9 @@ export class PaymentService {
   async paymeCallback(
     data: PaymeCallbackRequest,
     authorization?: string
-  ): Promise<Record<string, any>> {
+  ): Promise<Record<string, unknown>> {
     return withErrorHandling(() =>
-      api.post<Record<string, any>, PaymeCallbackRequest>(
+      api.post<Record<string, unknown>, PaymeCallbackRequest>(
         `${PAYMENTS_BASE}/payme/callback`,
         data,
         {
@@ -46,9 +46,9 @@ export class PaymentService {
   /**
    * Handle Click callback (usually called by Click server)
    */
-  async clickCallback(data: ClickCallbackRequest): Promise<Record<string, any>> {
+  async clickCallback(data: ClickCallbackRequest): Promise<Record<string, unknown>> {
     return withErrorHandling(() =>
-      api.post<Record<string, any>, ClickCallbackRequest>(
+      api.post<Record<string, unknown>, ClickCallbackRequest>(
         `${PAYMENTS_BASE}/click/callback`,
         data,
         { requireAuth: false }

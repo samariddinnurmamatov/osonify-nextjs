@@ -20,7 +20,7 @@ export interface SubscriptionPlan {
   price: number;
   duration: number;
   features: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ActiveSubscription {
@@ -31,6 +31,6 @@ export interface ActiveSubscription {
   start_date: string;
   expire_date?: string;
   is_active: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 

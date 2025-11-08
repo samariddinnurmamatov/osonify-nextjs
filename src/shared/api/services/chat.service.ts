@@ -3,7 +3,7 @@
  * Handles chat-related API calls
  */
 
-import { BaseService } from "../base/BaseService";
+import { BaseService, type ListParams } from "../base/BaseService";
 import { buildQuery } from "../utils/query";
 import { api } from "../client";
 import { withErrorHandling } from "../interceptors/error-handler";
@@ -31,7 +31,7 @@ export class ChatService extends BaseService<ChatData, CreateChatRequest, Partia
    * Get all chats with pagination
    */
   async getChats(params: ChatsListParams = {}) {
-    return this.list<ChatsListResponse>(params);
+    return this.list<ChatsListResponse>(params as ListParams);
   }
 
   /**
@@ -39,7 +39,7 @@ export class ChatService extends BaseService<ChatData, CreateChatRequest, Partia
    */
   async getTrashedChats(params: ChatsListParams = {}) {
     return withErrorHandling(() => {
-      const query = buildQuery(params);
+      const query = buildQuery(params as Record<string, unknown>);
       return api.get<ChatsListResponse>(`${ENDPOINT}/trashes${query}`);
     });
   }

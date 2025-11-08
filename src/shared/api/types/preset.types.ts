@@ -37,7 +37,7 @@ export interface PresetData {
   images: Array<{
     id: string;
     url: string;
-    [key: string]: any;
+    [key: string]: unknown;
   }>;
   liked_users: string[];
   like_count: number;
@@ -52,7 +52,7 @@ export interface PresetsListParams extends PaginationParams {
   model?: string;
 }
 
-export interface PresetsListResponse extends PaginatedResponse<PresetData> {}
+export type PresetsListResponse = PaginatedResponse<PresetData>;
 
 export interface ToggleLikePresetResponse {
   success: boolean;

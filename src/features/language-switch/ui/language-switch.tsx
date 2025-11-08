@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { Globe } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 const languages = [
@@ -46,7 +45,7 @@ export function LanguageSwitch({ className }: LanguageSwitchProps) {
           )}
         >
           <span className="text-lg">{currentLanguage.flag}</span>
-          <span className="sr-only">Tilni o'zgartirish</span>
+          <span className="sr-only">Tilni o&apos;zgartirish</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">

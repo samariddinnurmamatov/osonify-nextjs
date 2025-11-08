@@ -16,7 +16,7 @@ export interface FileData {
   filename?: string;
   size?: number;
   content_type?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface GetFilesResponse {

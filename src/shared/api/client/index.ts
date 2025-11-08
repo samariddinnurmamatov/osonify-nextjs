@@ -8,7 +8,6 @@
  */
 
 import { browserApi } from "./browser-fetch";
-import type { RequestOptions, ApiError } from "./api-factory";
 
 /**
  * Universal API client

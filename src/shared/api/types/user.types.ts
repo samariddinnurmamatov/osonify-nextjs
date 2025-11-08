@@ -28,7 +28,7 @@ export interface User {
     user_id: string;
     plan: string;
     plan_type: string;
-    expenses?: any[];
+    expenses?: unknown[];
     created_at: string;
     expire_date?: string;
     id: string;
@@ -38,7 +38,7 @@ export interface User {
 export interface UpdateUserRequest {
   interface_lang?: string;
   interface_theme?: "light" | "dark" | "system";
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface UpdateUserResponse {

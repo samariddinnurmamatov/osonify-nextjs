@@ -52,7 +52,7 @@ type NavUserProps = {
  */
 export const NavUser = memo(function NavUser({ user }: NavUserProps) {
   const { isMobile, state } = useSidebar();
-  const [open, setOpen] = useDialogState();
+  const [, setOpen] = useDialogState();
 
   const initials = useMemo(() => getInitials(user.name), [user.name]);
 

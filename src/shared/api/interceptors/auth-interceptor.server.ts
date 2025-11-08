@@ -50,10 +50,7 @@ export async function handleLogout(): Promise<void> {
  * Note: Server-side refresh is handled in server-fetch.ts
  * This is just a placeholder for type consistency
  */
-export async function authenticatedFetch<TResponse, TBody = unknown>(
-  path: string,
-  options: any = {}
-): Promise<TResponse> {
+export async function authenticatedFetch<TResponse>(): Promise<TResponse> {
   // Server-side refresh is handled in server-fetch.ts
   // This function is mainly for type consistency
   throw new Error("authenticatedFetch should not be called on server. Use api.get/post/etc directly.");

@@ -5,12 +5,13 @@ import { persist } from "zustand/middleware";
 import type { User, AuthTokens, AuthResponse, AuthState } from "./types";
 
 // Normalize user data
-const normalizeUser = (rawUser: any): User => {
+const normalizeUser = (rawUser: User | { user: User } | null | undefined): User => {
   if (!rawUser) return {} as User;
-  const u = rawUser.user ? rawUser.user : rawUser;
+  const u = "user" in rawUser ? rawUser.user : rawUser;
+  const userWithId = u as User & { _id?: string };
   return {
     ...u,
-    id: u._id ?? u.id,
+    id: userWithId._id ?? u.id,
   };
 };
 
@@ -83,13 +84,25 @@ export const useAuthStore = create<AuthStore>()(
 
       initializeAuth: async () => {
         // Check if Telegram Mini App
-        if (typeof window !== "undefined" && (window as any).Telegram?.WebApp?.initData) {
+        interface TelegramWindow extends Window {
+          Telegram?: {
+            WebApp?: {
+              initData?: string;
+            };
+          };
+        }
+        const tgWindow = window as TelegramWindow;
+        if (typeof window !== "undefined" && tgWindow.Telegram?.WebApp?.initData) {
           set({ isLoading: true });
           try {
             const { AuthService } = await import("../api/auth-service");
             const { userService } = await import("@/shared/api/services");
             
-            const initData = (window as any).Telegram.WebApp.initData;
+            const initData = tgWindow.Telegram.WebApp.initData;
+            if (!initData) {
+              set({ isAuthenticated: false, isLoading: false });
+              return;
+            }
             const authResponse = await AuthService.loginWithWebApp(initData);
             const profile = await userService.getProfile();
             

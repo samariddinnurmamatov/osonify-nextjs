@@ -1,8 +1,7 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   MoreVertical,
   Share,
@@ -43,7 +42,6 @@ export const ChatItem = memo(function ChatItem({
   onItemClick,
 }: ChatItemProps) {
   const { setOpenMobile, isMobile } = useSidebar();
-  const [isHovered, setIsHovered] = useState(false);
   const isActive = checkIsActive(pathname, item);
 
   const handleClick = useMemo(
@@ -76,8 +74,6 @@ export const ChatItem = memo(function ChatItem({
 
   return (
     <SidebarMenuSubItem
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className="group/chat-item relative"
     >
       <SidebarMenuSubButton

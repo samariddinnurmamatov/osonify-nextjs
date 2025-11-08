@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useAuthStore } from "../model";
 import { AuthService } from "../api/auth-service";
 import { userService } from "@/shared/api/services";
-import { env } from "@/shared/config/env";
+import type { TelegramLoginData } from "../model/types";
 
 interface TelegramLoginWidgetProps {
   botUsername?: string;
@@ -25,7 +25,7 @@ declare global {
       };
     };
     TelegramLoginWidget?: {
-      dataOnauth: (user: any) => void;
+      dataOnauth: (user: TelegramLoginData) => void;
     };
   }
 }
@@ -72,7 +72,7 @@ export function TelegramLoginWidget({
     if (typeof window === "undefined" || !containerRef.current) return;
 
     window.TelegramLoginWidget = {
-      dataOnauth: async (user: any) => {
+      dataOnauth: async (user: TelegramLoginData) => {
         setLoading(true);
         try {
           const authResponse = await AuthService.loginWithTelegram(user);
