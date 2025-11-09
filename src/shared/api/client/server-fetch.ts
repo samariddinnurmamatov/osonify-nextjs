@@ -8,6 +8,7 @@
 import { cookies, headers as nextHeaders } from "next/headers";
 import { createApiClient, RequestOptions, ApiError } from "./api-factory";
 import { baseFetch } from "./base-api";
+import type { User } from "../types/user.types";
 
 const TOKEN_COOKIE_NAME = "access_token";
 const REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
@@ -46,8 +47,11 @@ async function getRefreshToken(): Promise<string | undefined> {
 async function serverRefreshAccessToken(): Promise<string | null> {
   const refreshToken = await getRefreshToken();
   if (!refreshToken) {
+    console.log("[SSR] No refresh token found for token refresh");
     return null;
   }
+
+  console.log("[SSR] Attempting to refresh access token...");
 
   try {
     const response = await baseFetch<{ id: string; token: { access_token: string; refresh_token: string } }>(
@@ -58,6 +62,7 @@ async function serverRefreshAccessToken(): Promise<string | null> {
           Authorization: `Bearer ${refreshToken}`,
         },
         requireAuth: false,
+        cache: "no-store", // Prevent caching
       },
       true // isServer
     );
@@ -65,7 +70,25 @@ async function serverRefreshAccessToken(): Promise<string | null> {
     const newAccessToken = response.token.access_token;
     const newRefreshToken = response.token.refresh_token;
 
-    // Update cookies with new tokens
+      console.log("[SSR] Token refresh successful");
+
+    // Fetch user profile to update in cookies
+    let userData: User | null = null;
+    try {
+      userData = await baseFetch<User>("/api/v1/users/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${newAccessToken}`,
+        },
+        requireAuth: false,
+        cache: "no-store",
+      }, true);
+    } catch (error) {
+      console.error("[SSR] Failed to fetch user profile after refresh:", error);
+      // Continue without user data - it will be fetched on next request
+    }
+
+    // Update cookies with new tokens and user data
     try {
       const cookieStore = await cookies();
       
@@ -86,12 +109,37 @@ async function serverRefreshAccessToken(): Promise<string | null> {
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: "/",
       });
-    } catch {
+
+      // Update user data in cookie if available
+      if (userData) {
+        try {
+          const userDataJson = JSON.stringify(userData);
+          cookieStore.set("user_data", userDataJson, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7, // 7 days
+            path: "/",
+          });
+        } catch (userError) {
+          console.error("[SSR] Failed to save user data to cookie:", userError);
+        }
+      }
+      
+      console.log("[SSR] New tokens and user data saved to cookies");
+    } catch (cookieError) {
+      console.error("[SSR] Failed to save tokens to cookies:", cookieError);
       // Cookie setting failed, but return token anyway
     }
 
     return newAccessToken;
-  } catch {
+  } catch (error: unknown) {
+    const errorObj = error as { status?: number; message?: string; path?: string };
+    console.error("[SSR] Token refresh failed:", {
+      status: errorObj?.status,
+      message: errorObj?.message,
+      path: errorObj?.path,
+    });
     return null;
   }
 }
@@ -150,8 +198,10 @@ async function serverFetchWithRefresh<TResponse, TBody = unknown>(
     
     // If 401 and we have refresh token, try refresh and retry (with limit)
     if (apiError.status === 401 && requireAuth && retryCount < MAX_RETRY_COUNT) {
+      console.log(`[SSR] 401 error detected, attempting token refresh (retry ${retryCount + 1}/${MAX_RETRY_COUNT})...`);
       const newToken = await serverRefreshAccessToken();
       if (newToken) {
+        console.log("[SSR] Token refreshed successfully, retrying request...");
         requestHeaders.Authorization = `Bearer ${newToken}`;
         // Retry with incremented count
         return serverFetchWithRefresh<TResponse, TBody>(path, {
@@ -159,6 +209,8 @@ async function serverFetchWithRefresh<TResponse, TBody = unknown>(
           headers: requestHeaders,
           requireAuth: false,
         }, retryCount + 1);
+      } else {
+        console.log("[SSR] Token refresh failed, cannot retry request");
       }
     }
     

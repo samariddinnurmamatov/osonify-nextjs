@@ -7,9 +7,10 @@
 import { api, RequestOptions } from "../client";
 import { withErrorHandling } from "../interceptors/error-handler";
 import { buildQuery } from "../utils/query";
-import type { PaginationParams } from "../types/common";
 
-export interface ListParams extends PaginationParams {
+export interface ListParams {
+  page?: number;
+  limit?: number;
   [key: string]: unknown;
 }
 

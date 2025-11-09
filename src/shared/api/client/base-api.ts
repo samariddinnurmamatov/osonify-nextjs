@@ -79,7 +79,20 @@ async function parseResponse<TResponse>(response: Response): Promise<TResponse> 
   const contentType = response.headers.get("content-type");
   
   if (contentType?.includes("application/json")) {
-    return (await response.json()) as TResponse;
+    // Check if response has content before parsing
+    const text = await response.text();
+    
+    // If empty, return empty object or undefined
+    if (!text || text.trim() === "") {
+      return {} as TResponse;
+    }
+    
+    try {
+      return JSON.parse(text) as TResponse;
+    } catch (error) {
+      // If JSON parsing fails, throw a more descriptive error
+      throw new Error(`Failed to parse JSON response: ${error instanceof Error ? error.message : "Unknown error"}. Response: ${text.substring(0, 100)}`);
+    }
   }
 
   return (await response.text()) as TResponse;
@@ -156,7 +169,16 @@ export async function baseFetch<TResponse, TBody = unknown>(
       
       try {
         if (contentType?.includes("application/json")) {
-          errorData = await response.json();
+          const text = await response.text();
+          if (text && text.trim() !== "") {
+            try {
+              errorData = JSON.parse(text);
+            } catch {
+              errorData = text;
+            }
+          } else {
+            errorData = response.statusText;
+          }
         } else {
           errorData = await response.text();
         }
@@ -168,9 +190,9 @@ export async function baseFetch<TResponse, TBody = unknown>(
         status: response.status,
         message: typeof errorData === "string" 
           ? errorData 
-          : (typeof errorData === "object" && errorData !== null && "message" in errorData
-              ? String((errorData as { message?: unknown }).message)
-              : null) || response.statusText,
+          : (typeof errorData === "object" && errorData !== null && "message" in errorData && typeof errorData.message === "string")
+            ? errorData.message
+            : response.statusText,
         data: errorData,
         path: fullPath,
         method,

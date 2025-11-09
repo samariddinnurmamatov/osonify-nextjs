@@ -1,13 +1,10 @@
 /**
  * Auth Service
  * Handles authentication-related API calls
- * 
- * Note: This service uses browserApi for client-side usage
- * For server-side usage, use serverApi directly
  */
 
-import { browserApi } from "../client/browser-fetch";
-import { handleLoginSuccess, handleLogout } from "../interceptors/auth-interceptor.client";
+import { api } from "../client";
+import { handleLoginSuccess, handleLogout } from "../interceptors";
 import type {
   AuthResponse,
   TelegramLoginData,
@@ -20,7 +17,7 @@ export class AuthService {
    * Authenticate using Telegram WebApp initData
    */
   static async loginWithWebApp(initData: string): Promise<AuthResponse> {
-    const response = await browserApi.get<AuthResponse>(
+    const response = await api.get<AuthResponse>(
       `/api/v1/auth/webapp?init_data=${encodeURIComponent(initData)}`,
       { requireAuth: false }
     );
@@ -34,7 +31,7 @@ export class AuthService {
   static async loginWithTelegram(
     data: TelegramLoginData
   ): Promise<AuthResponse> {
-    const response = await browserApi.post<AuthResponse, TelegramLoginData>(
+    const response = await api.post<AuthResponse, TelegramLoginData>(
       "/api/v1/auth/telegram",
       data,
       { requireAuth: false }
@@ -47,7 +44,7 @@ export class AuthService {
    * Logout user
    */
   static async logout(data: LogoutRequest): Promise<LogoutResponse> {
-    const response = await browserApi.post<LogoutResponse, LogoutRequest>(
+    const response = await api.post<LogoutResponse, LogoutRequest>(
       "/api/v1/auth/logout",
       data,
       { requireAuth: false } // Tokens are in body
@@ -60,7 +57,7 @@ export class AuthService {
    * Refresh access token
    */
   static async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const response = await browserApi.post<AuthResponse, undefined>(
+    const response = await api.post<AuthResponse, undefined>(
       "/api/v1/auth/refresh",
       undefined,
       {

@@ -32,29 +32,5 @@
     "layout": "Макет",
     "direction": "Направление",
     "reset": "Сброс"
-  },
-  "auth": {
-    "please_login": "Пожалуйста, войдите",
-    "login_with_telegram": "Войти через Telegram",
-    "login_to_osonify": "Войти в Osonify",
-    "use_telegram_to_login": "Используйте Telegram для входа",
-    "authenticating": "Аутентификация...",
-    "login": "Войти",
-    "cancel": "Отмена",
-    "debug_login": "Debug Login",
-    "debug": {
-      "title": "Debug Login",
-      "subtitle": "Аутентификация в режиме разработки",
-      "active": "Режим отладки активен",
-      "description": "Это функция только для разработки. Никогда не включайте в production.",
-      "token_label": "Токен аутентификации",
-      "token_placeholder": "Введите ваш токен",
-      "skip_validation": "Пропустить проверку",
-      "enter_token": "Пожалуйста, введите токен",
-      "auth_failed_check_token": "Аутентификация не удалась. Проверьте ваш токен.",
-      "try_skip_validation": "Попробуйте включить 'Пропустить проверку', если токен недействителен",
-      "authenticating": "Аутентификация...",
-      "footer": "Только для разработки"
-    }
   }
 }

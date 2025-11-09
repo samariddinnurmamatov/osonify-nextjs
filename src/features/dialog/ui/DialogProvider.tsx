@@ -17,13 +17,12 @@ export function DialogProvider<T extends DialogKey = DialogKey>({
 }: DialogProviderProps<T>) {
   const state = useDialogState<T>(initial);
 
-  const value = useMemo(
-    () => ({ ...state }) as DialogContextValue,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const value = useMemo<DialogContextValue<T>>(
+    () => ({ ...state }),
     [state.current, state.isOpen, state.open, state.close, state.toggle]
   );
 
-  return <DialogContext.Provider value={value}>{children}</DialogContext.Provider>;
+  return <DialogContext.Provider value={value as unknown as DialogContextValue}>{children}</DialogContext.Provider>;
 }
 
 export function useDialogContext(): DialogContextValue {

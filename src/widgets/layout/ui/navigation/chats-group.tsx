@@ -17,7 +17,8 @@ import {
   SidebarMenuSub,
   useSidebar,
 } from "@/shared/ui/sidebar";
-import type { BaseNavItem } from "../../model/types";
+import type { ChatNavItem, BaseNavItem } from "../../model/types";
+import { checkIsActive } from "../../model";
 import { ChatItem } from "./chat-item";
 import { LinkProps } from "next/link";
 
@@ -33,6 +34,11 @@ export const ChatsGroup = memo(function ChatsGroup({ chats }: ChatsGroupProps) {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const pathname = usePathname() ?? "";
   const isCollapsed = state === "collapsed" && !isMobile;
+
+  const hasActiveChat = chats.some((chat) => {
+    const chatPath = typeof chat.url === "string" ? chat.url : "";
+    return pathname.startsWith(chatPath);
+  });
 
   if (isCollapsed) {
     // For collapsed state, render simple icon button

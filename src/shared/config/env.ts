@@ -64,13 +64,12 @@ export const env = {
   NEXT_PUBLIC_APP_ENV: (readPublic("NEXT_PUBLIC_APP_ENV") || "development") as AppEnv,
   
   /**
-   * API Base URL
-   * Defaults to https://api.osonify.ai if not set
-   * Can be overridden in .env.local
+   * API Base URL - REQUIRED
+   * Must be set in .env.local
    * Example: NEXT_PUBLIC_API_BASE_URL=https://api.osonify.ai
    */
   get NEXT_PUBLIC_API_BASE_URL(): string {
-    return readPublic("NEXT_PUBLIC_API_BASE_URL") || "https://api.osonify.ai";
+    return readPublicRequired("NEXT_PUBLIC_API_BASE_URL");
   },
 
   // Server-only utilities

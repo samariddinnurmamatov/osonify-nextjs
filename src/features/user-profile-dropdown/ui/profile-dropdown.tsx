@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 
 export function ProfileDropdown() {
-  const { setOpen } = useProfileDropdownState();
+  const { open, setOpen } = useProfileDropdownState();
 
   return (
     <>

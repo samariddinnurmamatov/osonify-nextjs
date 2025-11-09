@@ -3,7 +3,7 @@
  * Handles preset-related API calls
  */
 
-import { BaseService, type ListParams } from "../base/BaseService";
+import { BaseService } from "../base/BaseService";
 import { buildQuery } from "../utils/query";
 import { api } from "../client";
 import { withErrorHandling } from "../interceptors/error-handler";
@@ -32,7 +32,7 @@ export class PresetService extends BaseService<PresetData, CreatePresetRequest, 
    * Get all presets with pagination
    */
   async getPresets(params: PresetsListParams = {}) {
-    return this.list<PresetsListResponse>(params as ListParams);
+    return this.list<PresetsListResponse>(params);
   }
 
   /**
@@ -70,7 +70,7 @@ export class PresetService extends BaseService<PresetData, CreatePresetRequest, 
    */
   async getLikedPresets(params: Omit<PresetsListParams, "model"> = {}) {
     return withErrorHandling(() => {
-      const query = buildQuery(params as Record<string, unknown>);
+      const query = buildQuery(params);
       return api.get<PresetsListResponse>(`${ENDPOINT}/user/liked${query}`);
     });
   }

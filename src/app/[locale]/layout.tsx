@@ -24,8 +24,8 @@ interface LayoutProps {
 
 export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
-  if (!routing.locales.includes(locale as AppLocale)) notFound();
   const validLocale = locale as AppLocale;
+  if (!routing.locales.includes(validLocale)) notFound();
 
   const [messages, cookieStore, theme] = await Promise.all([
     getMessages({ locale: validLocale }),

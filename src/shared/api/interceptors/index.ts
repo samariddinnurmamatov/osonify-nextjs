@@ -1,23 +1,27 @@
 /**
  * Interceptors
- * 
- * IMPORTANT: 
- * - For client components: import from "./auth-interceptor.client"
- * - For server components: import from "./auth-interceptor.server"
- * 
- * Do not use barrel exports (index.ts) for auth interceptors to avoid bundling issues
+ * Tree-shakeable exports - automatically selects server or client implementation
  */
 
 // Error handler is universal
 export * from "./error-handler";
 
-// Client-side auth interceptor (for client components)
-export {
-  handleLoginSuccess as handleLoginSuccessClient,
-  handleLogout as handleLogoutClient,
-  authenticatedFetch as authenticatedFetchClient,
-} from "./auth-interceptor.client";
+// Auth interceptor - environment-specific
+// Tree-shakeable: only client code in client bundle, only server code in server bundle
+let authInterceptor: typeof import("./auth-interceptor.client");
 
-// Note: Server-side interceptors should be imported directly:
-// import { handleLoginSuccess, handleLogout } from "@/shared/api/interceptors/auth-interceptor.server";
+if (typeof window === "undefined") {
+  // Server-side: dynamic import to avoid bundling client code
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  authInterceptor = require("./auth-interceptor.server");
+} else {
+  // Client-side: dynamic import to avoid bundling server code
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  authInterceptor = require("./auth-interceptor.client");
+}
+
+// Re-export for convenience
+export const handleLoginSuccess = authInterceptor.handleLoginSuccess;
+export const handleLogout = authInterceptor.handleLogout;
+export const authenticatedFetch = authInterceptor.authenticatedFetch;
 

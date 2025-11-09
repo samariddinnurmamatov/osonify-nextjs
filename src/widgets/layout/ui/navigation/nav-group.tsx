@@ -33,6 +33,7 @@ import {
 
 import type {
   NavCollapsible,
+  NavItem,
   NavLink,
   NavGroup as NavGroupProps,
   ChatNavItem,

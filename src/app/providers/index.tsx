@@ -8,7 +8,6 @@ import { FontProvider } from "./font";
 import { QueryProvider } from "./query";
 import { UserHydrationProvider } from "./hydration";
 import { ToastProvider } from "./toast";
-import { AuthProvider } from "@/features/auth";
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -22,13 +21,11 @@ export function AppProviders({ children, defaultTheme }: AppProvidersProps) {
         <FontProvider>
           <LayoutProvider>
             <QueryProvider>
-              <AuthProvider>
-                <ToastProvider>
-                  <Suspense fallback={null}>
-                    <UserHydrationProvider>{children}</UserHydrationProvider>
-                  </Suspense>
-                </ToastProvider>
-              </AuthProvider>
+              <ToastProvider>
+                <Suspense fallback={null}>
+                  <UserHydrationProvider>{children}</UserHydrationProvider>
+                </Suspense>
+              </ToastProvider>
             </QueryProvider>
           </LayoutProvider>
         </FontProvider>
