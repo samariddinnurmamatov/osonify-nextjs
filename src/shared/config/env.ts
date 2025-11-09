@@ -61,7 +61,10 @@ function readServer(name: string, fallback?: string): string {
  */
 export const env = {
   // Public (client-accessible)
-  NEXT_PUBLIC_APP_ENV: (readPublic("NEXT_PUBLIC_APP_ENV") || "development") as AppEnv,
+  // Default to "production" if NODE_ENV is production, otherwise "development"
+  // This prevents debug features from showing in production builds
+  NEXT_PUBLIC_APP_ENV: (readPublic("NEXT_PUBLIC_APP_ENV") || 
+    (typeof process !== "undefined" && process.env.NODE_ENV === "production" ? "production" : "development")) as AppEnv,
   
   /**
    * API Base URL - REQUIRED
