@@ -4,7 +4,7 @@ import React, { createContext, useContext, useMemo } from "react";
 import { DialogContextValue, DialogKey, useDialogState } from "../model";
 
 
-const DialogContext = createContext<DialogContextValue | null>(null);
+const DialogContext = createContext<DialogContextValue<DialogKey> | null>(null);
 
 interface DialogProviderProps<T extends DialogKey = DialogKey> {
   children: React.ReactNode;
@@ -19,10 +19,11 @@ export function DialogProvider<T extends DialogKey = DialogKey>({
 
   const value = useMemo<DialogContextValue<T>>(
     () => ({ ...state }),
-    [state.current, state.isOpen, state.open, state.close, state.toggle]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state.current, state.open, state.close, state.toggle, state.isOpen]
   );
 
-  return <DialogContext.Provider value={value as unknown as DialogContextValue}>{children}</DialogContext.Provider>;
+  return <DialogContext.Provider value={value as unknown as DialogContextValue<DialogKey>}>{children}</DialogContext.Provider>;
 }
 
 export function useDialogContext(): DialogContextValue {

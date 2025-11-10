@@ -23,7 +23,7 @@ import {
   useLayout,
 } from "@/app/providers/layout";
 import { useTheme } from "@/app/providers/theme/ThemeProvider";
-import { routing, type AppLocale } from "@/shared/config/i18n";
+import { routing } from "@/shared/config/i18n";
 import {
   Sheet,
   SheetContent,
@@ -36,6 +36,7 @@ import {
 import { useSidebar } from "@/shared/ui/sidebar";
 import { useConfigDrawerState } from "../model/useConfigDrawerState";
 import { useLanguageSwitcher } from "@/features/language-switch";
+import type { AppLocale } from "@/shared/config/i18n";
 
 export function ConfigDrawer() {
   const { setOpen } = useSidebar();

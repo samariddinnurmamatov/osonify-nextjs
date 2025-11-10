@@ -1,57 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import { AuthService } from "@/shared/api/services/auth.service";
-import { handleLogout } from "@/shared/api/interceptors/auth-interceptor.server";
-import type { LogoutRequest } from "@/shared/api/types/auth.types";
+import { clearAuthCookies, getAuthCookies } from "@/shared/lib/cookies-server";
 
-/**
- * POST /api/auth/logout
- * 
- * Logs out user by calling backend and clearing cookies
- */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
-    const refreshToken = cookieStore.get("refresh_token")?.value;
+    const cookies = await getAuthCookies();
 
-    // If we have tokens, call backend logout
-    if (accessToken && refreshToken) {
+    if (cookies.accessToken && cookies.refreshToken) {
       try {
-        const logoutData: LogoutRequest = {
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        };
-        await AuthService.logout(logoutData);
+        await AuthService.logout({
+          access_token: cookies.accessToken,
+          refresh_token: cookies.refreshToken,
+        });
       } catch (error) {
-        // Even if backend logout fails, clear cookies
-        console.error("Backend logout error:", error);
+        console.error("Logout API error:", error);
+        // Continue to clear cookies even if API call fails
       }
     }
 
     // Clear cookies
-    await handleLogout();
+    await clearAuthCookies();
 
-    // Extract locale from referer or use default
-    const referer = request.headers.get("referer") || "";
-    const localeMatch = referer.match(/\/(en|ru|uz)\//);
-    const locale = localeMatch ? localeMatch[1] : "en";
-    
-    // Redirect to login
-    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
-  } catch (error: unknown) {
+    return NextResponse.json({ message: "Logged out successfully" });
+  } catch (error) {
     console.error("Logout error:", error);
-    
-    // Still clear cookies even on error
-    await handleLogout();
-    
-    // Extract locale from referer or use default
-    const referer = request.headers.get("referer") || "";
-    const localeMatch = referer.match(/\/(en|ru|uz)\//);
-    const locale = localeMatch ? localeMatch[1] : "en";
-    
-    // Redirect to login
-    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+    // Still clear cookies on error
+    await clearAuthCookies();
+    return NextResponse.json(
+      { detail: error instanceof Error ? error.message : "Logout failed" },
+      { status: 500 }
+    );
   }
 }
-

@@ -23,12 +23,12 @@ interface LayoutProps {
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
-  const validLocale = locale as AppLocale;
-  if (!routing.locales.includes(validLocale)) notFound();
+  const { locale: rawLocale } = await params;
+  const locale = rawLocale as AppLocale;
+  if (!routing.locales.includes(locale)) notFound();
 
   const [messages, cookieStore, theme] = await Promise.all([
-    getMessages({ locale: validLocale }),
+    getMessages({ locale }),
     cookies(),
     readThemeFromCookies(),
   ]);
@@ -37,7 +37,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const htmlClass = computeInitialThemeClass(theme);
 
   return (
-    <html lang={validLocale} className={htmlClass} suppressHydrationWarning>
+    <html lang={locale} className={htmlClass} suppressHydrationWarning>
       <head>
         <title>Osonify Admin</title>
         <meta name="description" content="Osonify Admin Panel" />
@@ -45,7 +45,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <script dangerouslySetInnerHTML={{ __html: inlineNoFlashScript() }} />
       </head>
       <body className="antialiased">
-        <NextIntlClientProvider locale={validLocale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <AppProviders defaultTheme={theme}>
             <SidebarProvider defaultOpen={defaultOpen}>
               <div className="flex min-h-screen w-full">

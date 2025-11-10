@@ -1,85 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
+import { setAuthCookies } from "@/shared/lib/cookies-server";
 import { env } from "@/shared/config/env";
-import { baseFetch } from "@/shared/api/client/base-api";
-import { handleLoginSuccess } from "@/shared/api/interceptors/auth-interceptor.server";
-import type { AuthResponse } from "@/shared/api/types/auth.types";
-import type { User } from "@/shared/api/types/user.types";
 
-/**
- * POST /api/auth/debug
- * 
- * Debug endpoint for development mode only
- * Validates token and sets cookies
- */
 export async function POST(request: NextRequest) {
   // Only allow in development
-  if (env.NEXT_PUBLIC_APP_ENV !== "development") {
+  if (env.NEXT_PUBLIC_APP_ENV === "production") {
     return NextResponse.json(
-      { error: "Debug endpoint only available in development" },
+      { detail: "Debug login is not available in production" },
       { status: 403 }
     );
   }
 
   try {
-    const body = await request.json();
-    const { access_token } = body;
+    const { token, skipValidation } = await request.json();
 
-    if (!access_token || typeof access_token !== "string") {
+    if (!token || typeof token !== "string") {
       return NextResponse.json(
-        { error: "Missing or invalid access_token" },
-        { status: 400 }
+        { detail: "Token is required" },
+        { status: 422 }
       );
     }
 
-    // Validate token by calling /api/v1/users/me
-    const user = await baseFetch<User>(
-      "/api/v1/users/me",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-        requireAuth: false,
-      },
-      true // isServer
-    );
+    // If skipValidation is true, just set the token without API validation
+    if (skipValidation) {
+      // Extract user ID from token (JWT format: header.payload.signature)
+      // This is a simple extraction, you might want to decode JWT properly
+      let userId = "debug-user";
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        userId = payload.sub || payload.id || payload.user_id || "debug-user";
+      } catch {
+        // If token is not JWT, use default
+      }
 
-    // Handle case where user data is already provided (skip validation mode)
-    let userData = user;
-    if (body.user) {
-      userData = body.user;
+      await setAuthCookies(token, token, userId);
+
+      return NextResponse.json({
+        id: userId,
+        token: {
+          access_token: token,
+          refresh_token: token,
+        },
+      });
     }
 
-    // Token is valid, but we need refresh token
-    // For debug mode, we'll create a mock response
-    // In real scenario, you'd need to get refresh token from somewhere
-    // For now, we'll just set the access token and use a placeholder refresh token
-    // Note: This is a limitation of debug mode - refresh won't work properly
-    // The refresh token is set to the same as access token for simplicity in debug mode
-    
-    const mockAuthResponse: AuthResponse = {
-      id: userData.id || "",
+    // Validate token with API
+    const API_BASE_URL = env.NEXT_PUBLIC_API_BASE_URL;
+    const response = await fetch(`${API_BASE_URL}/api/v1/user/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { detail: "Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const user = await response.json();
+
+    await setAuthCookies(token, token, user.id || "debug-user");
+
+    return NextResponse.json({
+      id: user.id,
       token: {
-        access_token: access_token,
-        refresh_token: access_token, // Placeholder - refresh won't work properly in debug mode
+        access_token: token,
+        refresh_token: token,
       },
-    };
-
-    // Set tokens and user data in cookies
-    await handleLoginSuccess(mockAuthResponse, userData);
-
-    return NextResponse.json({ success: true, user: userData });
-  } catch (error: unknown) {
+    });
+  } catch (error) {
     console.error("Debug login error:", error);
-    
-    const errorMessage = error instanceof Error ? error.message : "The provided token is invalid or expired";
     return NextResponse.json(
-      { 
-        error: "Invalid token",
-        message: errorMessage
-      },
-      { status: 401 }
+      { detail: error instanceof Error ? error.message : "Debug login failed" },
+      { status: 500 }
     );
   }
 }
-

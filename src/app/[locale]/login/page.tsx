@@ -1,10 +1,12 @@
+"use client";
+
 import { Card, CardContent } from "@/shared/ui/card";
 import { User } from "lucide-react";
-import { TelegramLoginButton } from "@/features/auth/ui";
+import { TelegramLoginButton, TokenDebugPanel } from "@/features/auth/ui";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
       <Card className="w-full max-w-sm border-none shadow-none bg-transparent">
         <CardContent className="flex flex-col items-center text-center space-y-5">
           <div className="flex flex-col items-center space-y-3">
@@ -20,6 +22,7 @@ export default function LoginPage() {
           <TelegramLoginButton />
         </CardContent>
       </Card>
+      <TokenDebugPanel />
     </div>
   );
 }

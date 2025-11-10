@@ -61,18 +61,41 @@ function readServer(name: string, fallback?: string): string {
  */
 export const env = {
   // Public (client-accessible)
-  // Default to "production" if NODE_ENV is production, otherwise "development"
-  // This prevents debug features from showing in production builds
-  NEXT_PUBLIC_APP_ENV: (readPublic("NEXT_PUBLIC_APP_ENV") || 
-    (typeof process !== "undefined" && process.env.NODE_ENV === "production" ? "production" : "development")) as AppEnv,
+  NEXT_PUBLIC_APP_ENV: (readPublic("NEXT_PUBLIC_APP_ENV") || "development") as AppEnv,
   
   /**
-   * API Base URL - REQUIRED
-   * Must be set in .env.local
+   * Telegram Bot Username
+   * Default: osonifybot
+   */
+  get NEXT_PUBLIC_TELEGRAM_BOT_USERNAME(): string {
+    return readPublic("NEXT_PUBLIC_TELEGRAM_BOT_USERNAME") || "osonifybot";
+  },
+  
+  /**
+   * API Base URL
+   * In development, defaults to https://api.osonify.ai
+   * In production, must be set in .env.local
    * Example: NEXT_PUBLIC_API_BASE_URL=https://api.osonify.ai
    */
   get NEXT_PUBLIC_API_BASE_URL(): string {
-    return readPublicRequired("NEXT_PUBLIC_API_BASE_URL");
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const appEnv = process.env.NEXT_PUBLIC_APP_ENV || "development";
+    
+    // In development, use default if not set
+    if (appEnv === "development" && (!apiUrl || apiUrl.trim() === "")) {
+      return "https://api.osonify.ai";
+    }
+    
+    // In production, require it
+    if (appEnv === "production" && (!apiUrl || apiUrl.trim() === "")) {
+      throw new Error(
+        `❌ Missing required environment variable: NEXT_PUBLIC_API_BASE_URL\n` +
+        `   Please add NEXT_PUBLIC_API_BASE_URL to your .env.local file\n` +
+        `   Example: NEXT_PUBLIC_API_BASE_URL=https://api.osonify.ai`
+      );
+    }
+    
+    return apiUrl || "https://api.osonify.ai";
   },
 
   // Server-only utilities

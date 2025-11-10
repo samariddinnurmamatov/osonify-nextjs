@@ -1,7 +1,3 @@
-/**
- * Auth Types
- */
-
 export interface AuthTokens {
   access_token: string;
   refresh_token: string;
@@ -18,7 +14,7 @@ export interface TelegramLoginData {
   last_name?: string;
   username?: string;
   photo_url?: string;
-  auth_date: string;
+  auth_date: number;
   hash: string;
 }
 

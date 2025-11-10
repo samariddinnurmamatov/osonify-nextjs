@@ -1,73 +1,93 @@
-/**
- * Auth Service
- * Handles authentication-related API calls
- */
-
-import { api } from "../client";
-import { handleLoginSuccess, handleLogout } from "../interceptors";
+import { env } from "@/shared/config/env";
 import type {
   AuthResponse,
   TelegramLoginData,
   LogoutRequest,
   LogoutResponse,
-} from "../types/auth.types";
+} from "../types";
+
+const API_BASE_URL = env.NEXT_PUBLIC_API_BASE_URL;
 
 export class AuthService {
   /**
-   * Authenticate using Telegram WebApp initData
+   * Authenticate using Telegram WebApp init_data
    */
   static async loginWithWebApp(initData: string): Promise<AuthResponse> {
-    const response = await api.get<AuthResponse>(
-      `/api/v1/auth/webapp?init_data=${encodeURIComponent(initData)}`,
-      { requireAuth: false }
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/auth/webapp?init_data=${encodeURIComponent(initData)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
-    handleLoginSuccess(response);
-    return response;
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: "Login failed" }));
+      throw new Error(error.detail || "Login failed");
+    }
+
+    return response.json();
   }
 
   /**
-   * Authenticate using Telegram login data
+   * Authenticate using Telegram user data
    */
-  static async loginWithTelegram(
-    data: TelegramLoginData
-  ): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse, TelegramLoginData>(
-      "/api/v1/auth/telegram",
-      data,
-      { requireAuth: false }
-    );
-    handleLoginSuccess(response);
-    return response;
+  static async loginWithTelegram(data: TelegramLoginData): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/telegram`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: "Login failed" }));
+      throw new Error(error.detail || "Login failed");
+    }
+
+    return response.json();
   }
 
   /**
    * Logout user
    */
-  static async logout(data: LogoutRequest): Promise<LogoutResponse> {
-    const response = await api.post<LogoutResponse, LogoutRequest>(
-      "/api/v1/auth/logout",
-      data,
-      { requireAuth: false } // Tokens are in body
-    );
-    handleLogout();
-    return response;
+  static async logout(tokens: LogoutRequest): Promise<LogoutResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tokens),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: "Logout failed" }));
+      throw new Error(error.detail || "Logout failed");
+    }
+
+    return response.json();
   }
 
   /**
    * Refresh access token
    */
   static async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse, undefined>(
-      "/api/v1/auth/refresh",
-      undefined,
-      {
-        requireAuth: false,
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      }
-    );
-    handleLoginSuccess(response);
-    return response;
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: "Token refresh failed" }));
+      throw new Error(error.detail || "Token refresh failed");
+    }
+
+    return response.json();
   }
 }
