@@ -29,8 +29,15 @@ export function LoginModal({
   const [token, setToken] = useState("");
   const [skipValidation, setSkipValidation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDevelopment, setIsDevelopment] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const widgetContainerRef = useRef<HTMLDivElement>(null);
-  const isDevelopment = env.NEXT_PUBLIC_APP_ENV === "development";
+
+  // Check environment only on client-side to avoid hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+    setIsDevelopment(env.NEXT_PUBLIC_APP_ENV === "development");
+  }, []);
 
   // Set up Telegram widget callback
   useEffect(() => {
@@ -85,38 +92,75 @@ export function LoginModal({
 
   // Load Telegram widget in production
   useEffect(() => {
-    if (!isDevelopment && open && widgetContainerRef.current) {
+    // Only load widget after mount and in production mode
+    if (!isMounted || isDevelopment || !open) {
+      if (isDevelopment) {
+        console.log("[LoginModal] Skipping widget load - development mode");
+      }
+      return;
+    }
+
+    console.log("[LoginModal] Loading Telegram widget...");
+
+    // Wait for container to be ready
+    const timer = setTimeout(() => {
+      if (!widgetContainerRef.current) {
+        console.warn("[LoginModal] Telegram widget container not found");
+        return;
+      }
+
       // Clear existing widget
       const existingScript = widgetContainerRef.current.querySelector("script");
       if (existingScript) {
+        console.log("[LoginModal] Removing existing widget script");
         widgetContainerRef.current.removeChild(existingScript);
       }
 
-      // Small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        if (!widgetContainerRef.current) return;
+      const botUsername = env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
+      if (!botUsername) {
+        console.error("[LoginModal] Telegram bot username is not configured");
+        return;
+      }
 
-        // Create new widget script
-        const script = document.createElement("script");
-        script.async = true;
-        script.src = "https://telegram.org/js/telegram-widget.js?22";
-        script.setAttribute("data-telegram-login", env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME);
-        script.setAttribute("data-size", "large");
-        script.setAttribute("data-corner-radius", "10");
-        script.setAttribute("data-request-access", "write");
-        script.setAttribute("data-userpic", "true");
-        script.setAttribute(
-          "data-onauth",
-          "TelegramLoginWidget.dataOnauth(user)"
-        );
-        widgetContainerRef.current.appendChild(script);
-      }, 100);
+      console.log("[LoginModal] Creating widget with bot:", botUsername);
 
-      return () => {
-        clearTimeout(timer);
+      // Create new widget script
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "https://telegram.org/js/telegram-widget.js?22";
+      script.setAttribute("data-telegram-login", botUsername);
+      script.setAttribute("data-size", "large");
+      script.setAttribute("data-corner-radius", "10");
+      script.setAttribute("data-request-access", "write");
+      script.setAttribute("data-userpic", "true");
+      script.setAttribute(
+        "data-onauth",
+        "TelegramLoginWidget.dataOnauth(user)"
+      );
+      
+      script.onload = () => {
+        console.log("[LoginModal] Telegram widget script loaded successfully");
       };
-    }
-  }, [isDevelopment, open]);
+      
+      script.onerror = () => {
+        console.error("[LoginModal] Failed to load Telegram widget script");
+      };
+
+      widgetContainerRef.current.appendChild(script);
+      console.log("[LoginModal] Widget script appended to container");
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      // Clean up script when component unmounts or modal closes
+      if (widgetContainerRef.current) {
+        const script = widgetContainerRef.current.querySelector("script");
+        if (script) {
+          widgetContainerRef.current.removeChild(script);
+        }
+      }
+    };
+  }, [isMounted, isDevelopment, open]);
 
   const handleDebugLogin = async () => {
     if (!token.trim()) {
@@ -153,7 +197,8 @@ export function LoginModal({
     }
   };
 
-  if (!isDevelopment && !open) {
+  // Don't render until mounted to avoid hydration mismatch
+  if (!isMounted || !open) {
     return null;
   }
 
@@ -239,7 +284,7 @@ export function LoginModal({
           ) : (
             <>
               {/* Production Mode - Telegram Widget */}
-              <div className="flex flex-col items-center justify-center py-4">
+              <div className="flex flex-col items-center justify-center py-4 min-h-[200px]">
                 {isLoading && (
                   <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -248,8 +293,14 @@ export function LoginModal({
                 )}
                 <div
                   ref={widgetContainerRef}
-                  className={isLoading ? "opacity-50 pointer-events-none" : ""}
+                  className={`w-full flex items-center justify-center ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+                  style={{ minHeight: "60px" }}
                 />
+                {!isLoading && (
+                  <p className="text-xs text-muted-foreground mt-4 text-center">
+                    Click the button above to log in with Telegram
+                  </p>
+                )}
               </div>
             </>
           )}
