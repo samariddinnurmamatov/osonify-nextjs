@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle2, RefreshCw, Eye, EyeOff, Info } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { env } from "@/shared/config/env";
@@ -9,6 +9,19 @@ import { getCookie } from "@/shared/lib/cookies";
 export function TokenDebugPanel() {
   const [isVisible, setIsVisible] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isDevelopment, setIsDevelopment] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [hasToken, setHasToken] = useState(false);
+
+  // Only check environment and cookies on client-side after mount
+  useEffect(() => {
+    setIsMounted(true);
+    setIsDevelopment(env.NEXT_PUBLIC_APP_ENV === "development");
+    const cookieUserId = getCookie("auth_user_id");
+    setUserId(cookieUserId || null);
+    setHasToken(!!cookieUserId);
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -31,7 +44,10 @@ export function TokenDebugPanel() {
     }
   };
 
-  const isDevelopment = env.NEXT_PUBLIC_APP_ENV === "development";
+  // Don't render anything until mounted to avoid hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
 
   if (!isDevelopment || !isVisible) {
     return (
@@ -44,9 +60,6 @@ export function TokenDebugPanel() {
       </button>
     );
   }
-
-  const userId = getCookie("auth_user_id");
-  const hasToken = !!getCookie("auth_user_id");
 
   return (
     <div className="fixed bottom-4 right-4 z-50 w-80 bg-gray-900 text-white rounded-lg shadow-xl border border-gray-700">

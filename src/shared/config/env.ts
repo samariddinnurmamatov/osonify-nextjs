@@ -55,13 +55,48 @@ function readServer(name: string, fallback?: string): string {
 }
 
 /**
+ * Detect if we're in production environment
+ * Checks for production domain or explicit env variable
+ */
+function detectAppEnv(): AppEnv {
+  const explicitEnv = readPublic("NEXT_PUBLIC_APP_ENV");
+  if (explicitEnv === "production" || explicitEnv === "test" || explicitEnv === "development") {
+    return explicitEnv as AppEnv;
+  }
+  
+  // Server-side: check NODE_ENV first (most reliable)
+  if (typeof window === "undefined") {
+    const nodeEnv = process.env.NODE_ENV;
+    if (nodeEnv === "production") {
+      return "production";
+    }
+  }
+  
+  // Client-side: auto-detect production by domain
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    // Production domains (not localhost, not .local, not .dev)
+    if (hostname.includes("vercel.app") || 
+        hostname.includes("osonify") || 
+        (!hostname.includes("localhost") && !hostname.includes(".local") && !hostname.includes(".dev"))) {
+      return "production";
+    }
+  }
+  
+  return "development";
+}
+
+/**
  * Environment configuration
  * All public variables are available on client
  * Server-only variables are guarded
  */
 export const env = {
   // Public (client-accessible)
-  NEXT_PUBLIC_APP_ENV: (readPublic("NEXT_PUBLIC_APP_ENV") || "development") as AppEnv,
+  // Use getter to detect environment dynamically
+  get NEXT_PUBLIC_APP_ENV(): AppEnv {
+    return detectAppEnv();
+  },
   
   /**
    * Telegram Bot Username
